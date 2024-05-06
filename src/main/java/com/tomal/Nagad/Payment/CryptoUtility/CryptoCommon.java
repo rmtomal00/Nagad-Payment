@@ -8,7 +8,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -16,8 +15,13 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 public class CryptoCommon {
+
+    private final String privateKey = "src/marchent_private.pem";
+    private final String publicKey = "src/marchent_public.pem";
+
     public byte[] sign(PrivateKey merchantPrivateKey, byte[] bytes) {
         Object var4 = null;
+        
 
         try {
             Signature instance = Signature.getInstance("SHA256withRSA");
@@ -51,9 +55,8 @@ public class CryptoCommon {
         return DatatypeConverter.printHexBinary(secure);
     }
 
-    public PublicKey getPublic(String filePath) throws Exception {
-        File file = new File(filePath);
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+    public PublicKey getPublic() throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(publicKey));
         String content = reader.readLine();
         System.out.println(content);
 
@@ -65,9 +68,8 @@ public class CryptoCommon {
         return kf.generatePublic(spec);
     }
 
-    public PrivateKey getPrivate(String filePath) throws Exception {
-        File file = new File(filePath);
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+    public PrivateKey getPrivate() throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(privateKey));
         String content = reader.readLine();
         System.out.println(content);
 

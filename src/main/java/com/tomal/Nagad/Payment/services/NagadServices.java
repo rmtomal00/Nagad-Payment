@@ -30,11 +30,9 @@ public class NagadServices {
     private final OkHttpClient client = new OkHttpClient();
     private final CryptoCommon common = new CryptoCommon();
     private ObjectMapper mapper = new ObjectMapper();
-    private final String publicKeyPath = "src/main/java/com/tomal/Nagad/Payment/path/marchent_public.pem";
-    private final String privateKeyPath = "src/main/java/com/tomal/Nagad/Payment/path/marchent_private.pem";
 
-    private Path pathPrivate = Paths.get(privateKeyPath).toAbsolutePath();
-    private Path publicPath = Paths.get(publicKeyPath).toAbsolutePath();
+
+
 
 
     private final String BaseUrl = "http://sandbox.mynagad.com:10080/remote-payment-gateway-1.0";
@@ -56,11 +54,9 @@ public class NagadServices {
         rawData.put("datetime", datetime);
         rawData.put("challenge", random);
 
-
-        System.out.println(pathPrivate.toString());
         String rawDataToBeEncrypted = mapper.writeValueAsString(rawData);
-        byte[] rawEncryptedBytes = common.encrypt(common.getPublic(publicPath.toString()), rawDataToBeEncrypted.getBytes("UTF-8"));
-        byte[] rawSignatureBytes = common.sign(common.getPrivate(pathPrivate.toString()), rawDataToBeEncrypted.getBytes("UTF-8"));
+        byte[] rawEncryptedBytes = common.encrypt(common.getPublic(), rawDataToBeEncrypted.getBytes("UTF-8"));
+        byte[] rawSignatureBytes = common.sign(common.getPrivate(), rawDataToBeEncrypted.getBytes("UTF-8"));
         String sensitiveData = encoder.encodeToString(rawEncryptedBytes);
         String signature = encoder.encodeToString(rawSignatureBytes);
 
@@ -91,11 +87,11 @@ public class NagadServices {
         String responsedata =  response.body().string();
         //System.out.println(responsedata);
         ApiInitializeModel apiData = new Gson().fromJson(responsedata, ApiInitializeModel.class);
-        byte[] dataDecode = common.decrypt(common.getPrivate(privateKeyPath), decoder.decode(apiData.getSensitiveData()));
+        byte[] dataDecode = common.decrypt(common.getPrivate(), decoder.decode(apiData.getSensitiveData()));
         String responseSensitiveData = new String(dataDecode, StandardCharsets.UTF_8);
         ApiInitializeModel initializeModel = new Gson().fromJson(responseSensitiveData, ApiInitializeModel.class);
         //System.out.println(responseSensitiveData);
-        Boolean verify = common.verifySign(common.getPublic(publicKeyPath), dataDecode , decoder.decode(apiData.getSignature()));
+        Boolean verify = common.verifySign(common.getPublic(), dataDecode , decoder.decode(apiData.getSignature()));
         if (!verify){
             return null;
         }
@@ -107,8 +103,8 @@ public class NagadServices {
         //System.out.println(mapper.writeValueAsString(data));
 
         rawDataToBeEncrypted = mapper.writeValueAsString(data);
-        rawEncryptedBytes = common.encrypt(common.getPublic(publicKeyPath), rawDataToBeEncrypted.getBytes("UTF-8"));
-        rawSignatureBytes = common.sign(common.getPrivate(privateKeyPath), rawDataToBeEncrypted.getBytes("UTF-8"));
+        rawEncryptedBytes = common.encrypt(common.getPublic(), rawDataToBeEncrypted.getBytes("UTF-8"));
+        rawSignatureBytes = common.sign(common.getPrivate(), rawDataToBeEncrypted.getBytes("UTF-8"));
         sensitiveData = encoder.encodeToString(rawEncryptedBytes);
         signature = encoder.encodeToString(rawSignatureBytes);
 
