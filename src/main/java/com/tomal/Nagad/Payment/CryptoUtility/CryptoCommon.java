@@ -84,8 +84,7 @@ public class CryptoCommon {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(2, aPrivate);
-            byte[] plainText = cipher.doFinal(decode);
-            return plainText;
+            return cipher.doFinal(decode);
         } catch (NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException var6) {
             throw new AsymmetricEncryptionFailure(var6);
         }

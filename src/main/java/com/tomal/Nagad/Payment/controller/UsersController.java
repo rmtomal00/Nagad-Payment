@@ -4,13 +4,17 @@ import com.tomal.Nagad.Payment.model.CompleteApiModel;
 import com.tomal.Nagad.Payment.model.PaymentModel;
 import com.tomal.Nagad.Payment.model.ResponseData;
 import com.tomal.Nagad.Payment.services.NagadServices;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class UsersController {
@@ -25,6 +29,9 @@ public class UsersController {
     public ResponseEntity<Object> create_link(@RequestBody PaymentModel model){
         String amount = model.getAmount();
         String order_data = model.getOrderData();
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String ip = request.getRemoteAddr();
+        System.out.println(ip);
         CompleteApiModel model1 = new CompleteApiModel(null, null, null, true);
         if (amount == null || amount.isEmpty() || amount.isBlank()
         || order_data == null || order_data.isEmpty() || order_data.isBlank()){
@@ -37,7 +44,7 @@ public class UsersController {
             String response;
             map.put("amount", amount.trim());
             try{
-                response = services.create(map);
+                response = services.create(map, ip);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
@@ -62,7 +69,7 @@ public class UsersController {
         }
     }
 
-    @GetMapping("/payment-status")
+    @GetMapping("/payment-status/")
     public ResponseEntity<Object> checkPaymentStatus(@RequestParam String payment_ref_id) throws IOException {
 
         if (payment_ref_id == null || payment_ref_id.isBlank() || payment_ref_id.isEmpty()){
