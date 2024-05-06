@@ -33,6 +33,10 @@ public class NagadServices {
     private final String publicKeyPath = "src/main/java/com/tomal/Nagad/Payment/path/marchent_public.pem";
     private final String privateKeyPath = "src/main/java/com/tomal/Nagad/Payment/path/marchent_private.pem";
 
+    private Path pathPrivate = Paths.get(privateKeyPath).toAbsolutePath();
+    private Path publicPath = Paths.get(publicKeyPath).toAbsolutePath();
+
+
     private final String BaseUrl = "http://sandbox.mynagad.com:10080/remote-payment-gateway-1.0";
     private String marchentId = "683002007104225";
     private Base64.Encoder encoder = Base64.getEncoder();
@@ -53,10 +57,10 @@ public class NagadServices {
         rawData.put("challenge", random);
 
 
-
+        System.out.println(pathPrivate.toString());
         String rawDataToBeEncrypted = mapper.writeValueAsString(rawData);
-        byte[] rawEncryptedBytes = common.encrypt(common.getPublic(publicKeyPath), rawDataToBeEncrypted.getBytes("UTF-8"));
-        byte[] rawSignatureBytes = common.sign(common.getPrivate(privateKeyPath), rawDataToBeEncrypted.getBytes("UTF-8"));
+        byte[] rawEncryptedBytes = common.encrypt(common.getPublic(publicPath.toString()), rawDataToBeEncrypted.getBytes("UTF-8"));
+        byte[] rawSignatureBytes = common.sign(common.getPrivate(pathPrivate.toString()), rawDataToBeEncrypted.getBytes("UTF-8"));
         String sensitiveData = encoder.encodeToString(rawEncryptedBytes);
         String signature = encoder.encodeToString(rawSignatureBytes);
 
@@ -112,7 +116,7 @@ public class NagadServices {
         productInfo.put("productName", "T-Shirt");
         productInfo.put("quantity", "1");
         String pro = mapper.writeValueAsString(productInfo);
-        System.out.println(pro);
+        //System.out.println(pro);
 
         JSONObject object = new JSONObject();
         object.put("sensitiveData",sensitiveData);
@@ -121,7 +125,7 @@ public class NagadServices {
         object.put("additionalMerchantInfo",productInfo);
 
         String bodyData = object.toString();
-        System.out.println(bodyData);
+        //System.out.println(bodyData);
 
         /*String body1 = "{     \"sensitiveData\": \""+sensitiveData+"\",     \"signature\": \""+signature+"\",     \"merchantCallbackURL\": \"http://localhost:8080/payment-status\", " +
                 "    \"additionalMerchantInfo\": {      \"productName\":\"shirt\",      \"productCount\":1     } } ";
