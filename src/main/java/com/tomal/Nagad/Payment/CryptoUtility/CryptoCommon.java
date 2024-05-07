@@ -4,6 +4,7 @@ import com.tomal.Nagad.Payment.exception.AsymmetricEncryptionFailure;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -11,6 +12,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -18,8 +21,10 @@ import java.util.Base64;
 
 
 public class CryptoCommon {
-    private final String privateKey = "src/main/java/com/tomal/Nagad/Payment/CryptoUtility/marchent_private.pem";
-    private final String publicKey = "src/main/java/com/tomal/Nagad/Payment/CryptoUtility/marchent_public.pem";
+
+
+    //InputStream inputStream = getClass().getResourceAsStream("/marchent_private.pem");
+    //InputStream publicKey = getClass().getResourceAsStream("/marchent_public.pem");
 
     public byte[] sign(PrivateKey merchantPrivateKey, byte[] bytes) {
         Object var4 = null;
@@ -58,7 +63,9 @@ public class CryptoCommon {
     }
 
     public PublicKey getPublic() throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(publicKey));
+        ClassPathResource resource = new ClassPathResource("marchent_public.pem");
+        InputStream inputStream = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String content = reader.readLine();
         System.out.println(content);
 
@@ -71,7 +78,9 @@ public class CryptoCommon {
     }
 
     public PrivateKey getPrivate() throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(privateKey));
+        ClassPathResource resource = new ClassPathResource("marchent_private.pem");
+        InputStream inputStream = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String content = reader.readLine();
         System.out.println(content);
 
