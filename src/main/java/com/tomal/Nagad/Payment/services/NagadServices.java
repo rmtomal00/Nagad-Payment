@@ -18,6 +18,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,9 +47,11 @@ public class NagadServices {
     public String create(Map<String, Object> data, String ipAddress) throws Throwable {
         byte[] KPG_DefaultSeed = ("nagad-dfs-service-ltd" + System.currentTimeMillis() + "").getBytes();;
         String random = common.generateRandomString(20, KPG_DefaultSeed);
-        Date date = new Date();
-        DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-        String datetime = format.format(date);
+        ZoneId dhakaZone = ZoneId.of("Asia/Dhaka");
+        ZonedDateTime currentDhakaTime = ZonedDateTime.now(dhakaZone);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        //DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        String datetime = formatter.format(currentDhakaTime);
         Long orderId = System.currentTimeMillis();
         Map<String, Object> rawData = new HashMap<>();
         rawData.put("merchantId", marchentId);
@@ -85,7 +90,7 @@ public class NagadServices {
 
         Response response = client.newCall(request).execute();
         String responsedata =  response.body().string();
-        //System.out.println(responsedata);
+
         ApiInitializeModel apiData = new Gson().fromJson(responsedata, ApiInitializeModel.class);
         byte[] dataDecode = common.decrypt(common.getPrivate(), decoder.decode(apiData.getSensitiveData()));
         String responseSensitiveData = new String(dataDecode, StandardCharsets.UTF_8);
@@ -103,15 +108,16 @@ public class NagadServices {
         //System.out.println(mapper.writeValueAsString(data));
 
         rawDataToBeEncrypted = mapper.writeValueAsString(data);
-        rawEncryptedBytes = common.encrypt(common.getPublic(), rawDataToBeEncrypted.getBytes("UTF-8"));
-        rawSignatureBytes = common.sign(common.getPrivate(), rawDataToBeEncrypted.getBytes("UTF-8"));
+        System.out.println(rawDataToBeEncrypted);
+        rawEncryptedBytes = common.encrypt(common.getPublic(), rawDataToBeEncrypted.getBytes(StandardCharsets.UTF_8));
+        rawSignatureBytes = common.sign(common.getPrivate(), rawDataToBeEncrypted.getBytes(StandardCharsets.UTF_8));
         sensitiveData = encoder.encodeToString(rawEncryptedBytes);
         signature = encoder.encodeToString(rawSignatureBytes);
-
+        System.out.println("work ");
         Map<String, Object> productInfo = new HashMap<>();
         productInfo.put("productName", "T-Shirt");
         productInfo.put("quantity", "1");
-        String pro = mapper.writeValueAsString(productInfo);
+        //String pro = mapper.writeValueAsString(productInfo);
         //System.out.println(pro);
 
         JSONObject object = new JSONObject();

@@ -23,9 +23,6 @@ import java.util.Base64;
 public class CryptoCommon {
 
 
-    //InputStream inputStream = getClass().getResourceAsStream("/marchent_private.pem");
-    //InputStream publicKey = getClass().getResourceAsStream("/marchent_public.pem");
-
     public byte[] sign(PrivateKey merchantPrivateKey, byte[] bytes) {
         Object var4 = null;
         
@@ -67,7 +64,7 @@ public class CryptoCommon {
         InputStream inputStream = resource.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String content = reader.readLine();
-        System.out.println(content);
+        //System.out.println(content);
 
         content = content.replaceAll("\\s", "");
 
@@ -82,7 +79,7 @@ public class CryptoCommon {
         InputStream inputStream = resource.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String content = reader.readLine();
-        System.out.println(content);
+        //System.out.println(content);
 
         content = content.replaceAll("\\s", "");
 
