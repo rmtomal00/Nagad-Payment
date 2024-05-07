@@ -2,6 +2,8 @@ package com.tomal.Nagad.Payment.CryptoUtility;
 
 import com.tomal.Nagad.Payment.exception.AsymmetricEncryptionFailure;
 import jakarta.xml.bind.DatatypeConverter;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -14,10 +16,10 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-public class CryptoCommon {
 
-    private final String privateKey = "src/marchent_private.pem";
-    private final String publicKey = "src/marchent_public.pem";
+public class CryptoCommon {
+    private final String privateKey = "src/main/java/com/tomal/Nagad/Payment/CryptoUtility/marchent_private.pem";
+    private final String publicKey = "src/main/java/com/tomal/Nagad/Payment/CryptoUtility/marchent_public.pem";
 
     public byte[] sign(PrivateKey merchantPrivateKey, byte[] bytes) {
         Object var4 = null;
